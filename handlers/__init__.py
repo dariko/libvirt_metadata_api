@@ -11,10 +11,13 @@ class ApiBaseHandler(tornado.web.RequestHandler):
     """
 
     def prepare(self):
+        remote_ip = self.request.remote_ip if not \
+                    self.request.headers.has_key("X-Forwarded-For") else \
+                    self.request.headers['X-Forwarded-For']
         self.require_setting('machine_resolver')
 
         self.request.machine =\
-            self.settings['machine_resolver'].get_machine(self.request.remote_ip)
+            self.settings['machine_resolver'].get_machine(remote_ip)
 
         assert isinstance(self.request.machine, utils.machine_resolver.Machine)
 

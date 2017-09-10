@@ -18,9 +18,16 @@ class LibvirtMachine(Machine):
     def __init__(self, ip, domain_etree):
         self.ip = ip
         self.domain_etree = domain_etree
+        self.domain_namespaces = {
+            'nova': 'http://openstack.org/nova/instance/1'
+        }
+
+        #for el in self.domain_etree.iter('*'): print(el.tag) 
+        #print self.domain_etree.find('vcpu').attrib
+        #print self.domain_etree.find('.//nova:instance-id', self.domain_namespaces)
 
     def get_userdata(self):
-        userdata_element = self.domain_etree.find('/metadata/userdata')
+        userdata_element = self.domain_etree.find('.//nova:userdata', self.domain_namespaces)
 
         if 'encoding' in userdata_element.attrib:
             if userdata_element.attrib['encoding'] == 'base64':
@@ -34,10 +41,10 @@ class LibvirtMachine(Machine):
         return userdata
 
     def get_instance_id(self):
-        return self.domain_etree.find('/metadata/instance-id').text
+        return self.domain_etree.find('.//nova:instance-id', self.domain_namespaces).text
 
     def get_instance_type(self):
-        return self.domain_etree.find('/metadata/instance-type').text
+        return self.domain_etree.find('.//nova:instance-type', self.domain_namespaces).text
 
     def get_public_ipv4(self):
         return self.ip
@@ -46,7 +53,7 @@ class LibvirtMachine(Machine):
         return self.ip
 
     def get_placement_availability_zone(self):
-        element = self.domain_etree.find('/metadata/placement/availability-zone')
+        element = self.domain_etree.find('.//nova:availability-zone', self.domain_namespaces)
         return element.text if element is not None else ''
 
     def get_keys(self):
@@ -66,14 +73,10 @@ class LibvirtMachine(Machine):
         """
 
         return collections.OrderedDict(
-            [(public_key.attrib['name'], {key.attrib['format']: key.text for key in public_key.findall('./key')})
-             for public_key in self.domain_etree.findall('/metadata/public-keys/public-key')]
+            [(public_key.attrib['name'], {key.attrib['format']: key.text for key in public_key.findall('./nova:key', self.domain_namespaces)})
+               for public_key in self.domain_etree.findall('.//nova:public-key', self.domain_namespaces)]
         )
 
-    def get_additional_metadata(self):
-        element = self.domain_etree.find('/metadata/additional')
-
-        return json.loads(element.text) if element is not None else None
 
 
 class LibvirtMachineResolver(MachineResolver):

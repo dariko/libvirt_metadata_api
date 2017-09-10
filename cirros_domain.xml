@@ -1,0 +1,54 @@
+<domain type='kvm'>
+    <metadata>
+        <nova:instance xmlns:nova="http://openstack.org/nova/instance/1">
+            <nova:instance-id>i-12345678</nova:instance-id>
+            <nova:instance-type>m1.tiny</nova:instance-type>
+            <nova:public-keys>
+                <nova:public-key name="admin">
+                        <nova:key format="openssh-key">ssh-rsa KEY root@localhost</nova:key>
+                </nova:public-key>
+            </nova:public-keys> 
+            <nova:placement>
+                <nova:availability-zone>nova</nova:availability-zone>
+            </nova:placement>
+            <nova:userdata>
+                #cloud-config
+                disable_root: False
+                ssh_pwauth: False
+                manage_etc_hosts: False
+            </nova:userdata>
+        </nova:instance>
+    </metadata>      
+    <name>cirros</name>
+    <memory>1048576</memory>
+    <currentMemory>1048576</currentMemory>
+    <vcpu>1</vcpu>
+    <os>
+        <type arch='x86_64' machine='pc'>hvm</type>
+        <boot dev='hd'/>
+    </os>
+    <features>
+        <acpi/>
+        <apic/>
+        <pae/>
+    </features>
+    <clock offset='localtime'/>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>destroy</on_crash>
+    <devices>
+        <emulator>/usr/libexec/qemu-kvm</emulator>
+        <disk type='block' device='disk'>
+            <driver name='qemu' type='qcow2'/>
+            <source dev='/dev/mapper/data-vm--001--disk--001'/>
+            <target dev='sda' bus='virtio'/>
+        </disk>
+        <interface type='bridge'>
+            <source bridge='virbr0'/>
+            <mac address="00:16:3e:5d:aa:a8"/>
+            <model type='virtio'/>
+            <driver name='vhost'/>
+         </interface>
+        <graphics type='vnc' port='-1' autoport='yes' listen = '0.0.0.0' keymap='en-us'/>
+    </devices>
+ </domain>
