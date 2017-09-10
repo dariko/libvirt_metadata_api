@@ -16,27 +16,25 @@ Example domain XML metadata
 ```
 <domain type="kvm">
     <metadata>
-        <instance-id>i-12345678</instance-id>
-
-        <!-- note that the userdata's indentation is safe,
-             just indent it as you would normally indent a YAML document.
-             see utils/xml.py for more information. You can also specify
-             encoding="base64" as an attribute to the userdata tag and
-             have the userdata formatted in base64 -->
-        <userdata>
-            #cloud-config
-            disable_root: False
-            ssh_pwauth: False
-            manage_etc_hosts: False
-        </userdata>
-
-        <public-keys>
-            <public-key name="my-public-key1">
-                <key format="openssh-key">ssh-rsa my-public-key1 foo@bar</key>
-            </public-key>
-        </public-keys>
-    </metadata>
-    
+        <nova:instance xmlns:nova="http://openstack.org/nova/instance/1">
+            <nova:instance-id>i-12345678</nova:instance-id>
+            <nova:instance-type>m1.tiny</nova:instance-type>
+            <nova:public-keys>
+                <nova:public-key name="admin">
+                    <nova:key format="openssh-key">ssh-rsa KEY root@localhost</nova:key>
+                </nova:public-key>
+            </nova:public-keys> 
+            <nova:placement>
+                <nova:availability-zone>nova</nova:availability-zone>
+            </nova:placement>
+            <nova:userdata>
+                #cloud-config
+                disable_root: False
+                ssh_pwauth: False
+                manage_etc_hosts: False
+            </nova:userdata>
+        </nova:instance>
+    </metadata>    
     <!-- extra domain data goes here -->
 </domain>
 ```
@@ -115,20 +113,25 @@ Fully working domain.xml
 ```
 <domain type='kvm'>
   <metadata>
-    <instance-id>i-12345678</instance-id>
-    <userdata>
-      #cloud-config
-      disable_root: False
-      ssh_pwauth: False
-      manage_etc_hosts: False
-    </userdata>
-    <public-keys>
-      <public-key name="admin">
-        <key format="openssh-key">ssh-rsa your-ssh-key-goes-here foo@bar</key>
-      </public-key>
-    </public-keys>
-  </metadata>
-
+      <nova:instance xmlns:nova="http://openstack.org/nova/instance/1">
+          <nova:instance-id>i-12345678</nova:instance-id>
+          <nova:instance-type>m1.tiny</nova:instance-type>
+          <nova:public-keys>
+              <nova:public-key name="admin">
+                <nova:key format="openssh-key">ssh-rsa KEY root@localhost</nova:key>
+              </nova:public-key>
+          </nova:public-keys> 
+          <nova:placement>
+            <nova:availability-zone>nova</nova:availability-zone>
+          </nova:placement>
+          <nova:userdata>
+              #cloud-config
+              disable_root: False
+              ssh_pwauth: False
+              manage_etc_hosts: False
+          </nova:userdata>
+      </nova:instance>
+  </metadata> 
   <name>test</name>
   <memory>1048576</memory>
   <vcpu>1</vcpu>
