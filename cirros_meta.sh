@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BIND_ADDR=127.0.0.1:3000
+BIND_ADDR=127.0.0.1:1024
 VM_IPADDR=192.168.122.19
 
 echo "URL START: index"
